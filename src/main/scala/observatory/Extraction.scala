@@ -1,6 +1,7 @@
 package observatory
 
 import java.time.LocalDate
+import scala.io.Source
 
 /**
   * 1st milestone: data extraction
@@ -14,7 +15,59 @@ object Extraction {
     * @return A sequence containing triplets (date, location, temperature)
     */
   def locateTemperatures(year: Int, stationsFile: String, temperaturesFile: String): Iterable[(LocalDate, Location, Double)] = {
-    ???
+
+    def stationIdfromParts(parts: Array[String]): String = {
+      val l = parts.length
+      if (l >= 2)
+        parts(0) + "," + parts(1)
+      else if (l == 1)
+        parts(0)
+      else
+        throw new Exception
+    }
+
+    def stationDatafromLine(line: String): (String, Option[Location]) = {
+
+      val parts = line split ","
+
+      def locationFromParts(): Option[Location] = {
+        val l = parts.length
+        if (l == 3 || l == 4)
+          Option(Location(parts(l - 2).toDouble, parts(l - 1).toDouble))
+        else
+          None
+      }
+
+      val id = if (parts.length == 1 || parts.length == 3 || parts.length == 4) stationIdfromParts(parts) else throw new Exception
+      val loc = if (parts.length == 1 || parts.length == 3 || parts.length == 4) locationFromParts() else throw new Exception
+
+      (id, loc)
+    }
+
+    val stations = (
+      for {
+        (id, Some(location)) <- Source.fromFile(stationsFile).getLines().map(stationDatafromLine(_))
+      } yield (id, location)
+      ).toMap
+
+    def temperatureDatafromLine(line: String): (String, LocalDate, Option[Double]) = {
+      val parts = line split ","
+      val l = parts.length
+      if (l == 4 || l == 5) {
+        val month = parts(l - 3).toInt
+        val day = parts(l - 2).toInt
+        val temp = if (parts(l - 1) == "9999.9") None else Option(parts(l - 1).toDouble)
+        (stationIdfromParts(parts), LocalDate.of(year, month, day), temp)
+      }
+      else
+        throw new Exception
+    }
+
+    val temperatures = for {
+      (id, date, Some(temperature)) <- Source.fromFile(temperaturesFile).getLines().map(temperatureDatafromLine(_))
+    } yield (id, date, temperature)
+
+    temperatures.map{case (id, date, temperature) => (date, stations(id), temperature)}.toIterable // TODO
   }
 
   /**
