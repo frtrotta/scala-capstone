@@ -56,7 +56,7 @@ object Extraction {
       if (l == 4 || l == 5) {
         val month = parts(l - 3).toInt
         val day = parts(l - 2).toInt
-        val temp = if (parts(l - 1) == "9999.9") None else Option(parts(l - 1).toDouble)
+        val temp = if (parts(l - 1) == "9999.9") None else Option((parts(l - 1).toDouble - 32.0) * (5.0/9.0))
         (stationIdfromParts(parts), LocalDate.of(year, month, day), temp)
       }
       else

@@ -1,4 +1,4 @@
-mustbe,present1,12,25,9999.9
-mustbe,present1,12,25,0.0
-mustbepresent2,,12,25,100.0
+mustbe,present1,12,24,9999.9
+mustbe,present1,12,25,32
+mustbepresent2,,12,25,212
 notinstation,,04,17,100.0

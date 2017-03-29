@@ -15,7 +15,7 @@ class ExtractionTest extends FunSuite {
     assert( r.toList ===
       List(
         (LocalDate.of(2015, 12, 25),Location(17.3,-5.23),0.0),
-        (LocalDate.of(2015, 12, 25),Location(20.0,20.0),100)
+        (LocalDate.of(2015, 12, 25),Location(20.0,20.0),100.0)
     ))
   }
 
@@ -26,7 +26,7 @@ class ExtractionTest extends FunSuite {
     assert(r.toList ===
       List(
         (Location(17.3,-5.23),0.0),
-        (Location(20.0,20.0),100)
+        (Location(20.0,20.0),100.0)
       )
     )
   }
