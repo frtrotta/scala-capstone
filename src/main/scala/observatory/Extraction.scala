@@ -26,20 +26,22 @@ object Extraction {
         throw new Exception
     }
 
+    def locationFromParts(parts: Array[String]): Option[Location] = {
+      if (parts.length == 4)
+        Option(Location(parts(2).toDouble, parts(3).toDouble))
+      else
+        None
+    }
+
+
     def stationDatafromLine(line: String): (String, Option[Location]) = {
 
       val parts = line split ","
 
-      def locationFromParts(): Option[Location] = {
-        val l = parts.length
-        if (l == 3 || l == 4)
-          Option(Location(parts(l - 2).toDouble, parts(l - 1).toDouble))
-        else
-          None
-      }
+      assert(parts.length == 1 || parts.length == 2 || parts.length == 4, s"$line")
 
-      val id = if (parts.length == 1 || parts.length == 3 || parts.length == 4) stationIdfromParts(parts) else throw new Exception
-      val loc = if (parts.length == 1 || parts.length == 3 || parts.length == 4) locationFromParts() else throw new Exception
+      val id = stationIdfromParts(parts)
+      val loc = locationFromParts(parts)
 
       (id, loc)
     }
