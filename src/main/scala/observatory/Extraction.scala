@@ -67,7 +67,6 @@ object Extraction {
       (id, date, Some(temperature)) <- Source.fromFile(getClass.getResource(temperaturesFile).getFile).getLines().map(temperatureDatafromLine(_))
     } yield (id, date, temperature)
 
-    //temperatures.map{case (id, date, temperature) => (date, stations(id), temperature)}.toIterable
     (for {
       (id, date, temperature) <- temperatures
       if (stations.contains(id))
@@ -79,7 +78,10 @@ object Extraction {
     * @return A sequence containing, for each location, the average temperature over the year.
     */
   def locationYearlyAverageRecords(records: Iterable[(LocalDate, Location, Double)]): Iterable[(Location, Double)] = {
-    ???
+    records
+      .map{case (date, location, temp) => (location, temp)}
+      .groupBy{case (location, temp) => location}
+      .mapValues(l => l.foldLeft(0.0)((a, e) => a + e._2) / l.size)
   }
 
 }
