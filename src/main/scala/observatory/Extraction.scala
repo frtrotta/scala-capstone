@@ -38,8 +38,6 @@ object Extraction {
 
       val parts = line split ","
 
-      assert(parts.length == 1 || parts.length == 2 || parts.length == 4, s"$line")
-
       val id = stationIdfromParts(parts)
       val loc = locationFromParts(parts)
 
@@ -69,7 +67,11 @@ object Extraction {
       (id, date, Some(temperature)) <- Source.fromFile(getClass.getResource(temperaturesFile).getFile).getLines().map(temperatureDatafromLine(_))
     } yield (id, date, temperature)
 
-    temperatures.map{case (id, date, temperature) => (date, stations(id), temperature)}.toIterable // TODO
+    //temperatures.map{case (id, date, temperature) => (date, stations(id), temperature)}.toIterable
+    (for {
+      (id, date, temperature) <- temperatures
+      if (stations.contains(id))
+    } yield (date, stations(id), temperature)).toIterable // TODO
   }
 
   /**

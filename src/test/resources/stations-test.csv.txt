@@ -1,0 +1,6 @@
+mustbe,present1,17.3,-5.23
+mustbepresent2,,20.0,20.0
+mustnotbe,present,0.0,
+mustnotbe,present,,,
+
+
