@@ -46,7 +46,7 @@ object Extraction {
 
     val stations = (
       for {
-        (id, Some(location)) <- Source.fromFile(stationsFile).getLines().map(stationDatafromLine(_))
+        (id, Some(location)) <- Source.fromFile(getClass.getResource(stationsFile).getFile).getLines().map(stationDatafromLine(_))
       } yield (id, location)
       ).toMap
 
@@ -64,7 +64,7 @@ object Extraction {
     }
 
     val temperatures = for {
-      (id, date, Some(temperature)) <- Source.fromFile(temperaturesFile).getLines().map(temperatureDatafromLine(_))
+      (id, date, Some(temperature)) <- Source.fromFile(getClass.getResource(temperaturesFile).getFile).getLines().map(temperatureDatafromLine(_))
     } yield (id, date, temperature)
 
     temperatures.map{case (id, date, temperature) => (date, stations(id), temperature)}.toIterable // TODO
