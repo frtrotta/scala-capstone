@@ -70,7 +70,7 @@ object Extraction {
     (for {
       (id, date, temperature) <- temperatures
       if (stations.contains(id))
-    } yield (date, stations(id), temperature)).toIterable // TODO
+    } yield (date, stations(id), temperature)).toIterable // enhance
   }
 
   /**
@@ -79,8 +79,8 @@ object Extraction {
     */
   def locationYearlyAverageRecords(records: Iterable[(LocalDate, Location, Double)]): Iterable[(Location, Double)] = {
     records
-      .map{case (date, location, temp) => (location, temp)}
-      .groupBy{case (location, temp) => location}
+      .map{case (_, location, temp) => (location, temp)}
+      .groupBy(_._1)
       .mapValues(l => l.foldLeft(0.0)((a, e) => a + e._2) / l.size)
   }
 
