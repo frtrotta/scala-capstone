@@ -19,4 +19,14 @@ class VisualizationTest extends FunSuite with Checkers {
     assert(greatCircleDistance(Location(0,0), Location(0,360)) === 0)
     assert(greatCircleDistance(Location(90,0), Location(-90,0)) === PI * r)
   }
+  test("inverseDistanceWeight") {
+    // ENHANCE property based testing
+
+    val temperatures = List(
+      (Location(0, 180), 10.0),
+      (Location(0, 0), 30.0)
+    )
+
+    assert(inverseDistanceWeight(Location(0,90), temperatures) === 20)
+  }
 }

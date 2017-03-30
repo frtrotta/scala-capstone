@@ -1,7 +1,7 @@
 package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
-import java.lang.Math.{acos, sin, cos, PI}
+import java.lang.Math.{acos, sin, cos, PI, pow}
 
 /**
   * 2nd milestone: basic visualization
@@ -27,12 +27,12 @@ object Visualization {
   }
 
   // https://en.wikipedia.org/wiki/Inverse_distance_weighting
-  def u(x: Location, temperatures: Iterable[(Location, Double)]): Double = {
-    def r(a: (Double, Double), e: (Location, Double)): (Double, Double) = {
-      val w = 1 / greatCircleDistance(x, e._1)
-      (w * e._2, w)
+  def inverseDistanceWeight(x: Location, temperatures: Iterable[(Location, Double)]): Double = {
+    def reduce(a: (Double, Double), e: (Location, Double)): (Double, Double) = {
+      val w = 1 / pow(greatCircleDistance(x, e._1), 2)
+      (a._1 + w * e._2, a._2 + w)
     }
-    val (num, den) = temperatures.foldLeft((0.0, 0.0))(r)
+    val (num, den) = temperatures.foldLeft((0.0, 0.0))(reduce)
     num / den
   }
 
@@ -45,7 +45,7 @@ object Visualization {
     temperatures.find(_._1 == location) match {
       case Some((_, t)) => t
       case None => {
-        u(location, temperatures)
+        inverseDistanceWeight(location, temperatures)
       }
     }
   }
