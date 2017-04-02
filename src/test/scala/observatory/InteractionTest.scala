@@ -4,6 +4,8 @@ package observatory
 import java.io.File
 import java.nio.file.{Files, Paths}
 
+import scala.math._
+
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -17,6 +19,7 @@ import observatory.Visualization.{interpolateColor, predictTemperature}
 class InteractionTest extends FunSuite with Checkers {
 
   val timing = new StringBuffer
+
   def timed[T](label: String, code: => T): T = {
     val start = System.currentTimeMillis()
     val result = code
@@ -45,7 +48,7 @@ class InteractionTest extends FunSuite with Checkers {
     println(s"***\tProcessing locationYearlyAverageRecords took ${stop - start} ms.")
 
     val location = Location(10.0, 0.0)
-    if (temperatures.exists{case(l, _) => l == location}) assert(false, "Choose a location that is not contained")
+    if (temperatures.exists { case (l, _) => l == location }) assert(false, "Choose a location that is not contained")
 
     start = System.currentTimeMillis()
     val temp = predictTemperature(temperatures, location)
@@ -62,21 +65,29 @@ class InteractionTest extends FunSuite with Checkers {
     val year = 2015
     val temperatures = Extraction.locationYearlyAverageRecords(Extraction.locateTemperatures(year, "/stations.csv", s"/$year.csv"))
 
-    val zoom = 0
-    val x = 0
-    val y = 0
+    generateTiles(2015 to 2015, 0 to 0, temperatures)
+  }
 
-    val p = Paths.get(s"target/temperatures/$year/$zoom")
-    if(Files.notExists(p)) {
-      Files.createDirectory(p)
+  private def generateTiles(yearList: Seq[Int], zoomList: Seq[Int], temperatures: Iterable[(Location, Double)]) = {
+    for (year <- yearList) {
+      for (zoom <- zoomList) {
+        for (x <- 0 to (pow(2, zoom).toInt - 1)) {
+          for (y <- 0 to (pow(2, zoom).toInt - 1)) {
+            val p = Paths.get(s"target/temperatures/$year/$zoom")
+            if (Files.notExists(p)) {
+              Files.createDirectory(p)
+            }
+            val start = System.currentTimeMillis()
+            tile(temperatures, colors, zoom, x, y, 8).output(new java.io.File(s"target/temperatures/$year/$zoom/$x-$y.png"))
+            val stop = System.currentTimeMillis()
+            val delta = stop - start
+            val h = (delta / 1000) / 3600
+            val m = ((delta / 1000) - (h * 3600)) / 60
+            val s = ((delta / 1000) - (h * 3660) - (m * 60))
+            println(s"***\tProcessing tile $zoom,$x,$y took $delta ms ($h:$m:$s).")
+          }
+        }
+      }
     }
-    val start = System.currentTimeMillis()
-    tile(temperatures, colors, zoom, x, y, 8).output(new java.io.File(s"target/temperatures/$year/$zoom/$x-$y.png"))
-    val stop = System.currentTimeMillis()
-    val delta = stop - start
-    val h = (delta/1000) / 3600
-    val m = ((delta/1000) - (h * 3600)) / 60
-    val s = ((delta/1000) - (h * 3660) - (m * 60))
-    println(s"***\tProcessing tile took $delta ms ($h: $m:$s).")
   }
 }

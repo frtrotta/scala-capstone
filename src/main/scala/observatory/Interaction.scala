@@ -4,6 +4,7 @@ import com.sksamuel.scrimage.{Image, Pixel}
 import java.lang.Math.{PI, atan, sinh}
 
 import observatory.Visualization.{interpolateColor, predictTemperature}
+import scala.math.{pow}
 
 /**
   * 3rd milestone: interactive visualization
@@ -17,7 +18,7 @@ object Interaction {
     * @return The latitude and longitude of the top-left corner of the tile, as per http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
     */
   def tileLocation(zoom: Int, x: Int, y: Int): Location = {
-    val p = 2^zoom
+    val p = pow(2,zoom)
     val lon = x / p * 360 - 180
     val lat = atan(sinh(PI - y / p * 2*PI)) * 180/PI
     Location(lat, lon)
@@ -60,10 +61,9 @@ object Interaction {
     generateImage: (Int, Int, Int, Int, Data) => Unit
   ): Unit = {
 
-    // ENHANCE data parallel
     for(zoom <- 0 to 3) {
-      for(x <- 0 to (2^zoom - 1)) {
-        for(y <- 0 to (2^zoom - 1)) {
+      for(x <- 0 to (pow(2,zoom).toInt - 1)) {
+        for(y <- 0 to (pow(2, zoom).toInt - 1)) {
           yearlyData.foreach{ case(year, data) => generateImage(year, zoom, x, y, data)}
         }
       }
