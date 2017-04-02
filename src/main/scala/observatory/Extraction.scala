@@ -78,10 +78,18 @@ object Extraction {
     * @return A sequence containing, for each location, the average temperature over the year.
     */
   def locationYearlyAverageRecords(records: Iterable[(LocalDate, Location, Double)]): Iterable[(Location, Double)] = {
-    records
+    /*records
       .map{case (_, location, temp) => (location, temp)}
       .groupBy(_._1)
       .mapValues(l => l.foldLeft(0.0)((a, e) => a + e._2) / l.size)
+
+      The intermediate .map{} both slowed the process down and consumed the whole available
+      memory. Congratulations!
+      */
+
+    records
+      .groupBy(_._2)
+      .mapValues(l => l.foldLeft(0.0)((a, e) => a + e._3) / l.size)
   }
 
 }

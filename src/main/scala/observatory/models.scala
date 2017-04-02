@@ -1,6 +1,28 @@
 package observatory
 
-case class Location(lat: Double, lon: Double)
+case class Location(lat: Double, lon: Double) {
+  self =>
+  def -(other: Location): Location = {
+    Location(
+      self.lat - other.lat,
+      self.lon - other.lon
+    )
+  }
+
+  def +(other: Location): Location = {
+    Location(
+      self.lat + other.lat,
+      self.lon + other.lon
+    )
+  }
+
+  def **(other: Location): Location = {
+    Location(
+      self.lat * other.lat,
+      self.lon * other.lon
+    )
+  }
+}
 
 case class Color(red: Int, green: Int, blue: Int) {
   self =>
