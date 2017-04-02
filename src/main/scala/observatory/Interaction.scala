@@ -31,23 +31,21 @@ object Interaction {
     * @param y Y coordinate
     * @return A 256×256 image showing the contents of the tile defined by `x`, `y` and `zooms`
     */
-  def tile(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int): Image = {
-    val image = new Array[Pixel](256*256)
+  def tile(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int, imgSize: Int = 256): Image = {
+    val image = new Array[Pixel](imgSize*imgSize)
     val NWcorner = tileLocation(zoom, x, y)
     val SEcorner = tileLocation(zoom, y+1, y+1)
-    val delta = (SEcorner - NWcorner) / 256
+    val delta = (SEcorner - NWcorner) / imgSize
 
-    // ENHANCE Data parallel
-    for(row <- 0 to 255) {
-      for(col <- (0 to 255).par) {
-        val location = (Location(row, col) ** delta) + NWcorner
-        val color = interpolateColor(colors, predictTemperature(temperatures, location))
-        val i = col * 256 + row
-        image(i) = Pixel(color.red, color.green, color.blue, 255)
-      }
+    for (i <- (0 to (imgSize*imgSize)-1).par) {
+      val row = i / imgSize
+      val col = i % imgSize
+      val location = (Location(row, col) ** delta) + NWcorner
+      val color = interpolateColor(colors, predictTemperature(temperatures, location))
+      image(i) = Pixel(color.red, color.green, color.blue, 127)
     }
 
-    Image(256, 256, image)
+    Image(imgSize, imgSize, image)
   }
 
   /**

@@ -1,5 +1,9 @@
 package observatory
 
+
+import java.io.File
+import java.nio.file.{Files, Paths}
+
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -38,7 +42,7 @@ class InteractionTest extends FunSuite with Checkers {
     var start = System.currentTimeMillis()
     val temperatures = Extraction.locationYearlyAverageRecords(Extraction.locateTemperatures(year, "/stations.csv", s"/$year.csv"))
     var stop = System.currentTimeMillis()
-    println(s"Processing locationYearlyAverageRecords took ${stop - start} ms.\n")
+    println(s"***\tProcessing locationYearlyAverageRecords took ${stop - start} ms.")
 
     val location = Location(10.0, 0.0)
     if (temperatures.exists{case(l, _) => l == location}) assert(false, "Choose a location that is not contained")
@@ -46,31 +50,33 @@ class InteractionTest extends FunSuite with Checkers {
     start = System.currentTimeMillis()
     val temp = predictTemperature(temperatures, location)
     stop = System.currentTimeMillis()
-    println(s"Processing predictTemperature took ${stop - start} ms.\n")
+    println(s"***\tProcessing predictTemperature took ${stop - start} ms.")
 
     start = System.currentTimeMillis()
     interpolateColor(colors, temp)
     stop = System.currentTimeMillis()
-    println(s"Processing interpolateColor took ${stop - start} ms.\n")
+    println(s"***\tProcessing interpolateColor took ${stop - start} ms.")
   }
 
-  /*test("tile") {
-
-    interpolateColor(colors, predictTemperature(temperatures, location))
-
-
+  test("tile") {
     val year = 2015
-    var start = System.currentTimeMillis()
     val temperatures = Extraction.locationYearlyAverageRecords(Extraction.locateTemperatures(year, "/stations.csv", s"/$year.csv"))
-    var stop = System.currentTimeMillis()
-    println(s"Processing locationYearlyAverageRecords took ${stop - start} ms.\n")
 
     val zoom = 0
     val x = 0
     val y = 0
-    start = System.currentTimeMillis()
-    tile(temperatures, colors, zoom, x, y).output(new java.io.File(s"target/temperatures/$year/$x-$y.png"))
-    stop = System.currentTimeMillis()
-    println(s"Processing tile took ${stop - start} ms.\n")
-  }*/
+
+    val p = Paths.get(s"target/temperatures/$year/$zoom")
+    if(Files.notExists(p)) {
+      Files.createDirectory(p)
+    }
+    val start = System.currentTimeMillis()
+    tile(temperatures, colors, zoom, x, y, 8).output(new java.io.File(s"target/temperatures/$year/$zoom/$x-$y.png"))
+    val stop = System.currentTimeMillis()
+    val delta = stop - start
+    val h = (delta/1000) / 3600
+    val m = ((delta/1000) - (h * 3600)) / 60
+    val s = ((delta/1000) - (h * 3660) - (m * 60))
+    println(s"***\tProcessing tile took $delta ms ($h: $m:$s).")
+  }
 }
