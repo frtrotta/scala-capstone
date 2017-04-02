@@ -65,10 +65,10 @@ class InteractionTest extends FunSuite with Checkers {
     val year = 2015
     val temperatures = Extraction.locationYearlyAverageRecords(Extraction.locateTemperatures(year, "/stations.csv", s"/$year.csv"))
 
-    generateTiles(2015 to 2015, 0 to 0, temperatures)
+    generateTiles(2015 to 2015, 0 to 0, temperatures, 8)
   }
 
-  private def generateTiles(yearList: Seq[Int], zoomList: Seq[Int], temperatures: Iterable[(Location, Double)]) = {
+  private def generateTiles(yearList: Seq[Int], zoomList: Seq[Int], temperatures: Iterable[(Location, Double)], imgSize: Int) = {
     for (year <- yearList) {
       for (zoom <- zoomList) {
         for (x <- 0 to (pow(2, zoom).toInt - 1)) {
@@ -78,7 +78,7 @@ class InteractionTest extends FunSuite with Checkers {
               Files.createDirectory(p)
             }
             val start = System.currentTimeMillis()
-            tile(temperatures, colors, zoom, x, y, 8).output(new java.io.File(s"target/temperatures/$year/$zoom/$x-$y.png"))
+            tile(temperatures, colors, zoom, x, y, imgSize).output(new java.io.File(s"target/temperatures/$year/$zoom/$x-$y.png"))
             val stop = System.currentTimeMillis()
             val delta = stop - start
             val h = (delta / 1000) / 3600
