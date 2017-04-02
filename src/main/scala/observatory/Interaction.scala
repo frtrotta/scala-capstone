@@ -35,15 +35,14 @@ object Interaction {
     val image = new Array[Pixel](256*256)
     val NWcorner = tileLocation(zoom, x, y)
     val SEcorner = tileLocation(zoom, y+1, y+1)
-    val delta = (SEcorner - NWcorner)
+    val delta = (SEcorner - NWcorner) / 256
 
     // ENHANCE Data parallel
     for(row <- 0 to 255) {
-      for(col <- 0 to 255) {
-        val i = col * 256 + row
-        // ENHANCE Computer factor once for all
-        val location = (Location(row/256.0, col/256.0) ** delta) + NWcorner
+      for(col <- (0 to 255).par) {
+        val location = (Location(row, col) ** delta) + NWcorner
         val color = interpolateColor(colors, predictTemperature(temperatures, location))
+        val i = col * 256 + row
         image(i) = Pixel(color.red, color.green, color.blue, 255)
       }
     }

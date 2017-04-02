@@ -22,6 +22,13 @@ case class Location(lat: Double, lon: Double) {
       self.lon * other.lon
     )
   }
+
+  def /(divisor: Double): Location = {
+    Location(
+      self.lat / divisor,
+      self.lon / divisor
+    )
+  }
 }
 
 case class Color(red: Int, green: Int, blue: Int) {

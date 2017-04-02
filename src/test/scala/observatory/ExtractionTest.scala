@@ -31,18 +31,18 @@ class ExtractionTest extends FunSuite {
     )
   }
 
-  test("locateTemperatures on real data") {
+  /*test("locateTemperatures on real data") {
     val start = System.currentTimeMillis()
     val  r = Extraction.locateTemperatures(2015, "/stations.csv", "/2015.csv")
     val stop = System.currentTimeMillis()
     println(s"Processing locateTemperatures on real data took ${stop - start} ms.\n")
-  }
+  }*/
 
-  test("locationYearlyAverageRecords on real data") {
+  /*test("locationYearlyAverageRecords on real data") {
     val start = System.currentTimeMillis()
     val records = Extraction.locateTemperatures(2015, "/stations.csv", "/2015.csv")
     val r = Extraction.locationYearlyAverageRecords(records)
     val stop = System.currentTimeMillis()
     println(s"Processing locationYearlyAverageRecords on real data took ${stop - start} ms.\n")
-  }
+  }*/
 }

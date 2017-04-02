@@ -6,8 +6,8 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.prop.Checkers
 
 import scala.collection.concurrent.TrieMap
-
 import Interaction._
+import observatory.Visualization.{interpolateColor, predictTemperature}
 
 @RunWith(classOf[JUnitRunner])
 class InteractionTest extends FunSuite with Checkers {
@@ -32,19 +32,45 @@ class InteractionTest extends FunSuite with Checkers {
     (-60.0, Color(0, 0, 0))
   ).reverse
 
-  test("tile") {
-    /*val year = 2015
+  test("interpolateColor") {
+
+    val year = 2015
     var start = System.currentTimeMillis()
     val temperatures = Extraction.locationYearlyAverageRecords(Extraction.locateTemperatures(year, "/stations.csv", s"/$year.csv"))
     var stop = System.currentTimeMillis()
-    println(s"Processing locationYearlyAverageRecords took ${stop - start} ms.\n")*/
+    println(s"Processing locationYearlyAverageRecords took ${stop - start} ms.\n")
 
-    /*val zoom = 0
+    val location = Location(10.0, 0.0)
+    if (temperatures.exists{case(l, _) => l == location}) assert(false, "Choose a location that is not contained")
+
+    start = System.currentTimeMillis()
+    val temp = predictTemperature(temperatures, location)
+    stop = System.currentTimeMillis()
+    println(s"Processing predictTemperature took ${stop - start} ms.\n")
+
+    start = System.currentTimeMillis()
+    interpolateColor(colors, temp)
+    stop = System.currentTimeMillis()
+    println(s"Processing interpolateColor took ${stop - start} ms.\n")
+  }
+
+  /*test("tile") {
+
+    interpolateColor(colors, predictTemperature(temperatures, location))
+
+
+    val year = 2015
+    var start = System.currentTimeMillis()
+    val temperatures = Extraction.locationYearlyAverageRecords(Extraction.locateTemperatures(year, "/stations.csv", s"/$year.csv"))
+    var stop = System.currentTimeMillis()
+    println(s"Processing locationYearlyAverageRecords took ${stop - start} ms.\n")
+
+    val zoom = 0
     val x = 0
     val y = 0
     start = System.currentTimeMillis()
     tile(temperatures, colors, zoom, x, y).output(new java.io.File(s"target/temperatures/$year/$x-$y.png"))
     stop = System.currentTimeMillis()
-    println(s"Processing \"tile\" took ${stop - start} ms.\n")*/
-  }
+    println(s"Processing tile took ${stop - start} ms.\n")
+  }*/
 }
