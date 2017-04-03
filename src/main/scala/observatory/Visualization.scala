@@ -108,18 +108,11 @@ object Visualization {
     */
   def visualize(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)]): Image = {
     val image = new Array[Pixel](360 * 180)
-    var i = 0
 
-    // ENHANCE Data parallel
-    for (x <- 0 to 359) {
-      for (y <- 0 to 179) {
-        i = pixelPositionToPixelIndex(x, y)
-
-        def color = interpolateColor(colors, predictTemperature(temperatures, pixelIndexToLocation(i)))
-
+    for(i <- (0 until (360*180)).par) {
+        val color = interpolateColor(colors, predictTemperature(temperatures, pixelIndexToLocation(i)))
         image(i) = Pixel(color.red, color.green, color.blue, 255)
       }
-    }
 
     Image(360, 180, image)
   }
