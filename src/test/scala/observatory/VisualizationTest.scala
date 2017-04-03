@@ -43,7 +43,7 @@ class VisualizationTest extends FunSuite with Checkers {
     assert(predictTemperature(temperatures, Location(0, 90)) === 20.0)
   }
 
-  val colors = List(
+  val colorScale = List(
     (60.0, Color(255, 255, 255)),
     (32.0, Color(255, 0, 0)),
     (12.0, Color(255, 255, 0)),
@@ -52,13 +52,13 @@ class VisualizationTest extends FunSuite with Checkers {
     (-27.0, Color(255, 0, 255)),
     (-50.0, Color(33, 0, 107)),
     (-60.0, Color(0, 0, 0))
-  )
+  ).reverse
 
   test("interpolateColor") {
-    assert(interpolateColor(colors, 70.0) === Color(255, 255, 255))
-    assert(interpolateColor(colors, -90.0) === Color(0, 0, 0))
-    assert(interpolateColor(colors, 12.0) === Color(255, 255, 0))
-    assert(interpolateColor(colors, 6.0) === Color((255.0 / 2).round.toInt, 255, (255.0 / 2).round.toInt))
+    assert(interpolateColor(colorScale, 70.0) === Color(255, 255, 255))
+    assert(interpolateColor(colorScale, -90.0) === Color(0, 0, 0))
+    assert(interpolateColor(colorScale, 12.0) === Color(255, 255, 0))
+    assert(interpolateColor(colorScale, 6.0) === Color((255.0 / 2).round.toInt, 255, (255.0 / 2).round.toInt))
   }
 
   test("pixelIndexToLocation") {
@@ -78,6 +78,6 @@ class VisualizationTest extends FunSuite with Checkers {
       (Location(0.0, 90), -50.0)
     )
 
-    visualize(temperatures, colors).output(new java.io.File("target/some-image.png"))
+    visualize(temperatures, colorScale).output(new java.io.File("target/some-image.png"))
   }
 }

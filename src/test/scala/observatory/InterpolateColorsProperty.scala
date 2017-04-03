@@ -12,7 +12,7 @@ import scala.math.{pow, _}
 @RunWith(classOf[JUnitRunner])
 class InterpolateColorsProperty extends PropSpec with PropertyChecks with Matchers {
 
-  val colors = List(
+  val colorScale = List(
     (60.0, Color(255, 255, 255)),
     (32.0, Color(255, 0, 0)),
     (12.0, Color(255, 255, 0)),
@@ -21,7 +21,7 @@ class InterpolateColorsProperty extends PropSpec with PropertyChecks with Matche
     (-27.0, Color(255, 0, 255)),
     (-50.0, Color(33, 0, 107)),
     (-60.0, Color(0, 0, 0))
-  )
+  ).reverse
 
   def temperatureDistance(a: Double, b: Double): Double = {
     (a - b).abs
@@ -35,18 +35,29 @@ class InterpolateColorsProperty extends PropSpec with PropertyChecks with Matche
   property("interpolated color should be close to that of the closest temperature") {
     forAll((Gen.choose(-100.0, 100.0), "temperature")) {
       (temperature: Double) => {
-        val color = interpolateColor(colors, temperature)
-        val (closestTempByTemp, closestColorByTemp) = colors.sortBy { case (t, _) => temperatureDistance(temperature, t) }.head
-        val (closestTempByColor, closestColorByColor) = colors.sortBy { case (_, c) => colorDistance(color, c) }.head
+        val color = interpolateColor(colorScale, temperature)
+        val (closestTempByTemp, closestColorByTemp) = colorScale.sortBy { case (t, _) => temperatureDistance(temperature, t) }.head
+        val (closestTempByColor, closestColorByColor) = colorScale.sortBy { case (_, c) => colorDistance(color, c) }.head
         closestTempByColor should equal (closestTempByTemp)
       }
     }
   }
 
+/*
+[info] - interpolated color should be close to that of the closest temperature *** FAILED ***
+[info]   TestFailedException was thrown during property evaluation.
+[info]     Message: -50.0 did not equal -27.0
+[info]     Location: (InterpolateColorsProperty.scala:41)
+[info]     Occurred when passed generated values (
+[info]       temperature = -38.45449941243753
+[info]     )
+*/
+
+
   property("interpolated color for temperatures in the reference should equal the reference color") {
-    forAll ((Gen.oneOf(colors), "color reference")) {
+    forAll ((Gen.oneOf(colorScale), "color reference")) {
       case (temperature, refColor) => {
-        val color = interpolateColor(colors, temperature)
+        val color = interpolateColor(colorScale, temperature)
         color should equal (refColor)
       }
     }

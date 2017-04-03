@@ -64,9 +64,9 @@ object Visualization {
     */
   def interpolateColor(points: Iterable[(Double, Color)], value: Double): Color = {
 
-    require(points.head._1 > points.tail.head._1) // descending ordering
+    require(points.head._1 < points.tail.head._1) // ascending ordering
 
-    if (value >= points.head._1) points.head._2
+    if (value <= points.head._1) points.head._2
     else {
       // ENHANCE Binary search
       @tailrec
@@ -74,10 +74,10 @@ object Visualization {
         rest match {
           case Nil => previous._2
           case next :: rs =>
-            if (value < next._1) interpolateColorHelper(next, rs)
+            if (value > next._1) interpolateColorHelper(next, rs)
             else {
-              val deltaV = (value - previous._1) / (next._1 - previous._1)
-              ((next._2 - previous._2) * deltaV) + previous._2
+              val weight = (value - previous._1) / (next._1 - previous._1)
+              ((next._2 - previous._2) * weight) + previous._2
             }
         }
       }

@@ -19,7 +19,7 @@ import observatory.Visualization.{interpolateColor, predictTemperature}
 
 @RunWith(classOf[JUnitRunner])
 class InteractionTestSpecific extends FunSuite {
-  val colors = List(
+  val colorScale = List(
     (60.0, Color(255, 255, 255)),
     (32.0, Color(255, 0, 0)),
     (12.0, Color(255, 255, 0)),
@@ -28,7 +28,7 @@ class InteractionTestSpecific extends FunSuite {
     (-27.0, Color(255, 0, 255)),
     (-50.0, Color(33, 0, 107)),
     (-60.0, Color(0, 0, 0))
-  )
+  ).reverse
 
  test("interpolateColor at Location(-27.05912578437406,-180.0) for 2015") {
     /* Incorrect computed color at Location(-27.05912578437406,-180.0): Color(153,0,102).
@@ -40,7 +40,7 @@ class InteractionTestSpecific extends FunSuite {
         Extraction.locateTemperatures(year, "/stations.csv", s"/$year.csv"))
     val location = Location(-27.05912578437406, -180)
     val temp = predictTemperature(temperatures, location)
-    val color = interpolateColor(colors, temp)
+    val color = interpolateColor(colorScale, temp)
     println(color)
   }
 }
