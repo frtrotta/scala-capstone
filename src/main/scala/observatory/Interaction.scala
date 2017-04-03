@@ -35,7 +35,7 @@ object Interaction {
   def tile(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int, imgSize: Int = 256): Image = {
     val image = new Array[Pixel](imgSize*imgSize)
     val NWcorner = tileLocation(zoom, x, y)
-    val SEcorner = tileLocation(zoom, y+1, y+1)
+    val SEcorner = tileLocation(zoom, x+1, y+1)
     val delta = (SEcorner - NWcorner) / imgSize
 
     for (i <- (0 to (imgSize*imgSize)-1).par) {
