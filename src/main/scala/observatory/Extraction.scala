@@ -87,6 +87,7 @@ object Extraction {
       memory. Congratulations!
       */
 
+    // TODO Does a .par after .groupBy allow for parallel mapValues execution?
     records
       .groupBy(_._2)
       .mapValues(l => l.foldLeft(0.0)((a, e) => a + e._3) / l.size)
