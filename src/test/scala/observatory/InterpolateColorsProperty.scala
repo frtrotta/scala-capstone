@@ -21,7 +21,7 @@ class InterpolateColorsProperty extends PropSpec with PropertyChecks with Matche
     (-27.0, Color(255, 0, 255)),
     (-50.0, Color(33, 0, 107)),
     (-60.0, Color(0, 0, 0))
-  ).reverse
+  )
 
   def temperatureDistance(a: Double, b: Double): Double = {
     (a - b).abs

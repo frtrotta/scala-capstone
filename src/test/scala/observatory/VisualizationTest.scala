@@ -52,7 +52,7 @@ class VisualizationTest extends FunSuite with Checkers {
     (-27.0, Color(255, 0, 255)),
     (-50.0, Color(33, 0, 107)),
     (-60.0, Color(0, 0, 0))
-  ).reverse
+  )
 
   test("interpolateColor") {
     assert(interpolateColor(colors, 70.0) === Color(255, 255, 255))

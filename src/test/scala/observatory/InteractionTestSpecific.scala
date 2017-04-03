@@ -28,28 +28,19 @@ class InteractionTestSpecific extends FunSuite {
     (-27.0, Color(255, 0, 255)),
     (-50.0, Color(33, 0, 107)),
     (-60.0, Color(0, 0, 0))
-  ).reverse
+  )
 
-/*  test("Grader - interpolateColor") {
+ test("interpolateColor at Location(-27.05912578437406,-180.0) for 2015") {
     /* Incorrect computed color at Location(-27.05912578437406,-180.0): Color(153,0,102).
     Expected to be closer to Color(0,0,255) than Color(255,0,0)
      */
-    val year = 2015
-    val temperatures = Extraction.locationYearlyAverageRecords(Extraction.locateTemperatures(year, "/stations.csv", s"/$year.csv"))
+   val year = 2015
+    val temperatures =
+      Extraction.locationYearlyAverageRecords(
+        Extraction.locateTemperatures(year, "/stations.csv", s"/$year.csv"))
     val location = Location(-27.05912578437406, -180)
     val temp = predictTemperature(temperatures, location)
     val color = interpolateColor(colors, temp)
     println(color)
-  }*/
-
-  test("interpolateColor") {
-    for ((temperature, color) <- colors) {
-      assert(interpolateColor(colors, temperature) === color)
-    }
-
-    def colorDistance(a: Color, b: Color): Double = {
-      val delta = a - b
-      sqrt(pow(delta.red, 2) + pow(delta.green, 2) + pow(delta.blue, 2))
-    }
   }
 }
