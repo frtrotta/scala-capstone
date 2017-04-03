@@ -33,16 +33,13 @@ object Visualization {
 
   // https://en.wikipedia.org/wiki/Inverse_distance_weighting
   def inverseDistanceWeight(x: Location, temperatures: Iterable[(Location, Double)]): Double = {
-    /* ENHANCE Would ParIterable produce any benefit?
-    * The signature of predictTemperature cannot be changed, therefore each call
-    * would require the conversion of a Iterable to a ParIterable.
-    * */
-    def reduce(a: (Double, Double), e: (Location, Double)): (Double, Double) = {
-      val w = 1 / pow(greatCircleDistance(x, e._1), 2)
-      (a._1 + w * e._2, a._2 + w)
+    def m(t: (Location, Double)): (Double, Double) = {
+      val (loc, temperature) = t
+      val w = 1 / pow(greatCircleDistance(x, loc), 2)
+      (w * temperature, w)
     }
 
-    val (num, den) = temperatures.foldLeft((0.0, 0.0))(reduce)
+    val (num, den) = temperatures.par.map(m).reduce((a, b) => (a._1+b._1, a._2+b._2))
     num / den
   }
 
