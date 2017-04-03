@@ -65,7 +65,7 @@ class InteractionTest extends FunSuite with Checkers {
     val year = 2015
     val temperatures = Extraction.locationYearlyAverageRecords(Extraction.locateTemperatures(year, "/stations.csv", s"/$year.csv"))
 
-    generateTiles(2015 to 2015, 0 to 3, temperatures, 8)
+    generateTiles(2015 to 2015, 0 to 0, temperatures, 8)
   }
 
   private def generateTiles(yearList: Seq[Int], zoomList: Seq[Int], temperatures: Iterable[(Location, Double)], imgSize: Int) = {

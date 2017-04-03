@@ -1,5 +1,6 @@
 package observatory
 
+
 case class Location(lat: Double, lon: Double) {
   self =>
   def -(other: Location): Location = {
