@@ -10,11 +10,6 @@ import scala.annotation.tailrec
   */
 object Visualization {
 
-  /* https://en.wikipedia.org/wiki/Great-circle_distance
-    R = 6371km (does it really care?)
-   */
-  val r = 1
-
   def greatCircleDistance(a: Location, b: Location): Double = {
     def rad(x: Double): Double = {
       x * PI / 180
@@ -29,7 +24,10 @@ object Visualization {
     def lambda2 = rad(b.lon)
 
     // ENHANCE http://http.developer.nvidia.com/Cg/acos.html
-    r * (acos(sin(fi1) * sin(fi2) + cos(fi1) * cos(fi2) * cos(lambda1 - lambda2))) // cosine is even
+    (acos(sin(fi1) * sin(fi2) + cos(fi1) * cos(fi2) * cos(lambda1 - lambda2)))
+    // https://en.wikipedia.org/wiki/Great-circle_distance
+    // cosine is even
+    // radius can be simplified
   }
 
   // https://en.wikipedia.org/wiki/Inverse_distance_weighting

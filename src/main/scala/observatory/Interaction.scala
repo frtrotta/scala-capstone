@@ -36,12 +36,12 @@ object Interaction {
     val image = new Array[Pixel](imgSize*imgSize)
     val NWcorner = tileLocation(zoom, x, y)
     val SEcorner = tileLocation(zoom, x+1, y+1)
-    val delta = (SEcorner - NWcorner) / imgSize
+    val f = (SEcorner - NWcorner) / imgSize
 
-    for (i <- (0 to (imgSize*imgSize)-1).par) {
-      val row = i / imgSize
-      val col = i % imgSize
-      val location = (Location(row, col) ** delta) + NWcorner
+    for (i <- (0 until imgSize*imgSize).par) {
+      val y = i / imgSize
+      val x = i % imgSize
+      val location = (Location(y, x) ** f) + NWcorner
       val color = interpolateColor(colors, predictTemperature(temperatures, location))
       image(i) = Pixel(color.red, color.green, color.blue, 127)
     }
