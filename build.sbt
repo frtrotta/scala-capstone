@@ -45,4 +45,15 @@ assignmentsMap := Map(
   )
 )
 
+resolvers ++= Seq(
+  "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+  "Sonatype OSS Releases" at "https://oss.sonatype.org/content/repositories/releases"
+)
+
+libraryDependencies += "com.storm-enroute" %% "scalameter" % "0.7"
+
+testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework")
+
+logBuffered := false
+
 parallelExecution in Test := false // So that tests are executed for each milestone, one after the other

@@ -18,16 +18,6 @@ import observatory.Visualization.{interpolateColor, predictTemperature}
 @RunWith(classOf[JUnitRunner])
 class InteractionTest extends FunSuite with Checkers {
 
-  val timing = new StringBuffer
-
-  def timed[T](label: String, code: => T): T = {
-    val start = System.currentTimeMillis()
-    val result = code
-    val stop = System.currentTimeMillis()
-    timing.append(s"Processing $label took ${stop - start} ms.\n")
-    result
-  }
-
   val colors = List(
     (60.0, Color(255, 255, 255)),
     (32.0, Color(255, 0, 0)),
@@ -41,7 +31,7 @@ class InteractionTest extends FunSuite with Checkers {
 
   test("interpolateColor") {
 
-    val year = 2015
+    /*val year = 2015
     var start = System.currentTimeMillis()
     val temperatures = Extraction.locationYearlyAverageRecords(Extraction.locateTemperatures(year, "/stations.csv", s"/$year.csv"))
     var stop = System.currentTimeMillis()
@@ -58,7 +48,7 @@ class InteractionTest extends FunSuite with Checkers {
     start = System.currentTimeMillis()
     interpolateColor(colors, temp)
     stop = System.currentTimeMillis()
-    println(s"***\tProcessing interpolateColor took ${stop - start} ms.")
+    println(s"***\tProcessing interpolateColor took ${stop - start} ms.")*/
   }
 
   test("tile") {

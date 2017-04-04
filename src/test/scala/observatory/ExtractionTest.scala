@@ -42,10 +42,10 @@ class ExtractionTest extends FunSuite {
   }
 
   test("locateTemperatures on real data") {
-    val start = System.currentTimeMillis()
+    //val start = System.currentTimeMillis()
     val r = Extraction.locateTemperatures(2015, "/stations.csv", "/2015.csv")
-    val stop = System.currentTimeMillis()
-    println(s"***\tProcessing locateTemperatures on real data took ${stop - start} ms.")
+    //val stop = System.currentTimeMillis()
+    //println(s"***\tProcessing locateTemperatures on real data took ${stop - start} ms.")
 
     val temp = r.toList.sorted(SingleTempRecordsOrdering).take(4)
     assert(temp === List(
@@ -69,11 +69,11 @@ class ExtractionTest extends FunSuite {
   }
 
   test("locationYearlyAverageRecords on real data") {
-    val start = System.currentTimeMillis()
+    //val start = System.currentTimeMillis()
     val records = Extraction.locateTemperatures(2015, "/stations.csv", "/2015.csv")
     val r = Extraction.locationYearlyAverageRecords(records)
-    val stop = System.currentTimeMillis()
-    println(s"***\tProcessing locationYearlyAverageRecords on real data took ${stop - start} ms.")
+    //val stop = System.currentTimeMillis()
+    //println(s"***\tProcessing locationYearlyAverageRecords on real data took ${stop - start} ms.")
     val temp = r.toList.sorted(LocatioAverageTempRecordsOrdering).take(4)
     assert(temp === List(
       (Location(40.839, 8.405), -17.959999999999997),
