@@ -17,7 +17,7 @@ object Visualization {
 
   def greatCircleDistance(a: Location, b: Location): Double = {
     def rad(x: Double): Double = {
-      x * (2 * PI) / 360
+      x * PI / 180
     }
 
     def fi1 = rad(a.lat)
