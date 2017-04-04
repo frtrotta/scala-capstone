@@ -1,10 +1,9 @@
 package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
-import java.lang.Math.{PI, atan, sinh}
 
 import observatory.Visualization.{interpolateColor, predictTemperature}
-import scala.math.{pow}
+import scala.math._
 
 /**
   * 3rd milestone: interactive visualization
@@ -18,9 +17,9 @@ object Interaction {
     * @return The latitude and longitude of the top-left corner of the tile, as per http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
     */
   def tileLocation(zoom: Int, x: Int, y: Int): Location = {
-    val p = pow(2,zoom)
-    val lon = x / p * 360 - 180
-    val lat = atan(sinh(PI - y / p * 2*PI)) * 180/PI
+    val p = (1<<zoom)
+    val lon = x.toDouble / p * 360.0 - 180.0
+    val lat = atan(sinh(Pi * (1 - 2 * y.toDouble / p))) * 180.0/Pi
     Location(lat, lon)
   }
 
@@ -37,11 +36,17 @@ object Interaction {
     val NWcorner = tileLocation(zoom, x, y)
     val SEcorner = tileLocation(zoom, x+1, y+1)
     val f = (SEcorner - NWcorner) / imgSize
+    val p = 1<<zoom
 
     for (i <- (0 until imgSize*imgSize).par) {
-      val y = i / imgSize
-      val x = i % imgSize
-      val location = (Location(y, x) ** f) + NWcorner
+      val yPixel = i / imgSize
+      val xPixel = i % imgSize
+
+      val lon = (xPixel.toDouble / imgSize + x) * 360 / p - 180.0
+      val lat = atan(sinh(Pi * (1 - 2 * (yPixel.toDouble / imgSize + y) / p))) * 180.0/Pi
+
+      val location = Location(lat, lon)
+
       val color = interpolateColor(colors, predictTemperature(temperatures, location))
       image(i) = Pixel(color.red, color.green, color.blue, 127)
     }
@@ -62,8 +67,8 @@ object Interaction {
   ): Unit = {
 
     for(zoom <- 0 to 3) {
-      for(x <- 0 to (pow(2,zoom).toInt - 1)) {
-        for(y <- 0 to (pow(2, zoom).toInt - 1)) {
+      for(x <- 0 to ((1<<zoom) - 1)) {
+        for(y <- 0 to ((1<<zoom) - 1)) {
           yearlyData.foreach{ case(year, data) => generateImage(year, zoom, x, y, data)}
         }
       }
