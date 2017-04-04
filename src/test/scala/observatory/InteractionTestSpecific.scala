@@ -33,6 +33,10 @@ class InteractionTestSpecific extends FunSuite {
  test("interpolateColor at Location(-27.05912578437406,-180.0) for 2015") {
     /* Incorrect computed color at Location(-27.05912578437406,-180.0): Color(153,0,102).
     Expected to be closer to Color(0,0,255) than Color(255,0,0)
+
+    Incorrect computed color at Location(-27.05912578437406,-180.0): Color(153,0,102).
+     Expected to be closer to Color(0,0,255) than Color(255,0,0)
+
      */
    val year = 2015
     val temperatures =

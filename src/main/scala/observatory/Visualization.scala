@@ -28,6 +28,7 @@ object Visualization {
 
     def lambda2 = rad(b.lon)
 
+    // ENHANCE http://http.developer.nvidia.com/Cg/acos.html
     r * (acos(sin(fi1) * sin(fi2) + cos(fi1) * cos(fi2) * cos(lambda1 - lambda2))) // cosine is even
   }
 
@@ -64,9 +65,13 @@ object Visualization {
     */
   def interpolateColor(points: Iterable[(Double, Color)], value: Double): Color = {
 
-    require(points.head._1 < points.tail.head._1) // ascending ordering
+    val colorScale = points.toList.sortBy{case (t, _) => t}
 
-    if (value <= points.head._1) points.head._2
+    /* When a requirement is set of the ordering of points, it happens to fail both for ascending (less fails)
+        and descending (more frequently).
+     */
+
+    if (value <= colorScale.head._1) colorScale.head._2
     else {
       // ENHANCE Binary search
       @tailrec
@@ -82,7 +87,7 @@ object Visualization {
         }
       }
 
-      interpolateColorHelper(points.head, points.tail)
+      interpolateColorHelper(colorScale.head, colorScale.tail)
     }
 
   }
