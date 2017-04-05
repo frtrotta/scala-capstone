@@ -8,10 +8,11 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class ExtractionTest extends FunSuite {
+  import Extraction._
 
   test("locateTemperatures") {
     import java.time.LocalDate
-    val r = Extraction.locateTemperatures(2015, "/stations-test.csv.txt", "/2015-test.csv.txt")
+    val r = locateTemperatures(2015, "/stations-test.csv.txt", "/2015-test.csv.txt")
     assert(r.toList ===
       List(
         (LocalDate.of(2015, 12, 25), Location(17.3, -5.23), 0.0),
@@ -20,8 +21,8 @@ class ExtractionTest extends FunSuite {
   }
 
   test("locationYearlyAverageRecords") {
-    val records = Extraction.locateTemperatures(2015, "/stations-test.csv.txt", "/2015-test.csv.txt")
-    val r = Extraction.locationYearlyAverageRecords(records)
+    val records = locateTemperatures(2015, "/stations-test.csv.txt", "/2015-test.csv.txt")
+    val r = locationYearlyAverageRecords(records)
 
     assert(r.toList ===
       List(
@@ -42,10 +43,8 @@ class ExtractionTest extends FunSuite {
   }
 
   test("locateTemperatures on real data") {
-    //val start = System.currentTimeMillis()
-    val r = Extraction.locateTemperatures(2015, "/stations.csv", "/2015.csv")
-    //val stop = System.currentTimeMillis()
-    //println(s"***\tProcessing locateTemperatures on real data took ${stop - start} ms.")
+    val year = 2015
+    val r = locateTemperatures(year, "/stations.csv", s"/$year.csv")
 
     val temp = r.toList.sorted(SingleTempRecordsOrdering).take(4)
     assert(temp === List(
@@ -69,11 +68,9 @@ class ExtractionTest extends FunSuite {
   }
 
   test("locationYearlyAverageRecords on real data") {
-    //val start = System.currentTimeMillis()
-    val records = Extraction.locateTemperatures(2015, "/stations.csv", "/2015.csv")
-    val r = Extraction.locationYearlyAverageRecords(records)
-    //val stop = System.currentTimeMillis()
-    //println(s"***\tProcessing locationYearlyAverageRecords on real data took ${stop - start} ms.")
+    val year = 2015
+    val records = locateTemperatures(year, "/stations.csv", s"/$year.csv")
+    val r = locationYearlyAverageRecords(records)
     val temp = r.toList.sorted(LocatioAverageTempRecordsOrdering).take(4)
     assert(temp === List(
       (Location(40.839, 8.405), -17.959999999999997),
