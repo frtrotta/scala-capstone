@@ -8,6 +8,7 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class ExtractionTest extends FunSuite {
+
   import Extraction._
 
   test("locateTemperatures") {
@@ -42,11 +43,13 @@ class ExtractionTest extends FunSuite {
     }
   }
 
-  test("locateTemperatures on real data") {
-    val year = 2015
-    val r = locateTemperatures(year, "/stations.csv", s"/$year.csv")
+  var records: Iterable[(LocalDate, Location, Double)] = Nil
 
-    val temp = r.toList.sorted(SingleTempRecordsOrdering).take(4)
+  test("locateTemperatures on real data (2015)") {
+    val year = 2015
+    records = locateTemperatures(year, "/stations.csv", s"/$year.csv")
+
+    val temp = records.toList.sorted(SingleTempRecordsOrdering).take(4)
     assert(temp === List(
       (LocalDate.of(2015, 1, 1), Location(-90.0, 0.0), -8.666666666666668),
       (LocalDate.of(2015, 1, 1), Location(-89.0, 89.667), -22.11111111111111),
@@ -67,17 +70,20 @@ class ExtractionTest extends FunSuite {
     }
   }
 
-  test("locationYearlyAverageRecords on real data") {
-    val year = 2015
-    val records = locateTemperatures(year, "/stations.csv", s"/$year.csv")
-    val r = locationYearlyAverageRecords(records)
-    val temp = r.toList.sorted(LocatioAverageTempRecordsOrdering).take(4)
-    assert(temp === List(
-      (Location(40.839, 8.405), -17.959999999999997),
-      (Location(-89.0, -1.017), -17.511904761904763),
-      (Location(38.767, -104.3), -17.25757575757576),
-      (Location(15.233, -12.167), -17.0)
-    )
-    )
+  test("locationYearlyAverageRecords on real data (2015)") {
+    if (records != Nil) {
+      val r = locationYearlyAverageRecords(records)
+      val temp = r.toList.sorted(LocatioAverageTempRecordsOrdering).take(4)
+      assert(temp === List(
+        (Location(40.839, 8.405), -17.959999999999997),
+        (Location(-89.0, -1.017), -17.511904761904763),
+        (Location(38.767, -104.3), -17.25757575757576),
+        (Location(15.233, -12.167), -17.0)
+      )
+      )
+    }
+    else {
+      fail("Unable to execute without located temperature records")
+    }
   }
 }
