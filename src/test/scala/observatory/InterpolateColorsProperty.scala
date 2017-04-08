@@ -12,6 +12,8 @@ import scala.math.{pow, _}
 @RunWith(classOf[JUnitRunner])
 class InterpolateColorsProperty extends PropSpec with PropertyChecks with Matchers {
 
+  // TODO Rename in InterpolateColorsProperties
+
   val colorScale = List(
     (60.0, Color(255, 255, 255)),
     (32.0, Color(255, 0, 0)),
