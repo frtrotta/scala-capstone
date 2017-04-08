@@ -11,6 +11,8 @@ object Manipulation {
     (90 - lat) * 360 + (lon + 180)
   }
 
+  val gridStep = 10
+
   /**
     * @param temperatures Known temperatures
     * @return A function that, given a latitude in [-89, 90] and a longitude in [-180, 179],
@@ -49,7 +51,7 @@ object Manipulation {
       }
     }
 
-    val averages = m.mapValues(l => l.foldRight(0.0)(_+_) / l.size)
+    val averages = m.mapValues(l => l.reduce(_ + _) / l.size)
     makeGrid(averages)
   }
 

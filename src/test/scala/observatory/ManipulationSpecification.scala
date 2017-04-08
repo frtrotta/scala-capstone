@@ -10,7 +10,7 @@ import org.scalacheck.Gen
 import scala.math.{pow, sqrt}
 
 @RunWith(classOf[JUnitRunner])
-class ManipulationTest extends PropSpec with PropertyChecks with Matchers {
+class ManipulationSpecification extends PropSpec with PropertyChecks with Matchers {
 
   import Manipulation._
 
