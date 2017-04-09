@@ -10,7 +10,7 @@ import org.scalatest.junit.JUnitRunner
 import scala.math.{pow, _}
 
 @RunWith(classOf[JUnitRunner])
-class InterpolateColorsProperty extends PropSpec with PropertyChecks with Matchers {
+class InterpolateColorsTest extends PropSpec with PropertyChecks with Matchers {
 
   val colorScale = List(
     (60.0, Color(255, 255, 255)),

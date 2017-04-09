@@ -61,20 +61,20 @@ class InteractionTest extends FunSuite with Checkers {
   private def generateTiles(yearList: Seq[Int], zoomList: Seq[Int], temperatures: Iterable[(Location, Double)], imgSize: Int) = {
     for (year <- yearList) {
       for (zoom <- zoomList) {
-        for (x <- 0 to (pow(2, zoom).toInt - 1)) {
-          for (y <- 0 to (pow(2, zoom).toInt - 1)) {
+        for (x <- 0 to (1 << zoom - 1)) {
+          for (y <- 0 to (1 << zoom - 1)) {
             val p = Paths.get(s"target/temperatures/$year/$zoom")
             if (Files.notExists(p)) {
               Files.createDirectories(p)
             }
-            val start = System.currentTimeMillis()
+            //val start = System.currentTimeMillis()
             tile(temperatures, colors, zoom, x, y, imgSize).output(new java.io.File(s"target/temperatures/$year/$zoom/$x-$y.png"))
-            val stop = System.currentTimeMillis()
+            /*val stop = System.currentTimeMillis()
             val delta = stop - start
             val h = (delta / 1000) / 3600
             val m = ((delta / 1000) - (h * 3600)) / 60
             val s = ((delta / 1000) - (h * 3660) - (m * 60))
-            println(s"***\tProcessing tile $zoom,$x,$y took $delta ms ($h:$m:$s).")
+            println(s"***\tProcessing tile $zoom,$x,$y took $delta ms ($h:$m:$s).")*/
           }
         }
       }
