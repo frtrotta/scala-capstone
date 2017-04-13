@@ -1,3 +1,5 @@
+lazy val Benchmark = config("bench") extend Test
+
 lazy val root = (project in file("."))
   .settings(
     name := course.value ++ "-" ++ assignment.value,
@@ -50,5 +52,10 @@ lazy val root = (project in file("."))
     ),
     testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework"),
     parallelExecution in Test := false, // So that tests are executed for each milestone, one after the other
+    parallelExecution in Benchmark := false,
     logBuffered := false
+  ) configs(
+    Benchmark
+  ) settings(
+    inConfig(Benchmark)(Defaults.testSettings): _*
   )
