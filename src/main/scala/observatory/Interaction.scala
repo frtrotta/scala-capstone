@@ -66,6 +66,7 @@ object Interaction {
     generateImage: (Int, Int, Int, Int, Data) => Unit
   ): Unit = {
 
+    // ENHANCE parallel execution
     for(zoom <- 0 to 3) {
       for(x <- 0 to ((1<<zoom) - 1)) {
         for(y <- 0 to ((1<<zoom) - 1)) {
