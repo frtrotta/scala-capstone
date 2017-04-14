@@ -1,6 +1,10 @@
 package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
+import observatory.Interaction.tileLocation
+import observatory.Visualization.{interpolateColor}
+
+import scala.math.{Pi, atan, sinh}
 
 /**
   * 5th milestone: value-added information visualization
@@ -28,6 +32,19 @@ object Visualization2 {
     d11*x*y+d01*(1-x)*y+d10*x*(1-y)+d00*(1-x)*(1-y)
   }
 
+  def predictTemperature(grid: (Int, Int) => Double, loc: Location) = {
+
+    val lat = loc.lat
+    val lon = loc.lon
+
+    val d00 = grid(lat.ceil.toInt, lon.floor.toInt)
+    val d01 = grid(lat.floor.toInt, lon.floor.toInt)
+    val d10 = grid(lat.ceil.toInt, lon.ceil.toInt)
+    val d11 = grid(lat.floor.toInt, lon.ceil.toInt)
+
+    bilinearInterpolation(lon - lon.floor, lat.ceil - lat, d00, d01, d10, d11)
+  }
+
   /**
     * @param grid Grid to visualize
     * @param colors Color scale to use
@@ -41,9 +58,30 @@ object Visualization2 {
     colors: Iterable[(Double, Color)],
     zoom: Int,
     x: Int,
-    y: Int
+    y: Int,
+    imgSize: Int = 256
   ): Image = {
-    ???
-  }
+    val image = new Array[Pixel](imgSize*imgSize)
+    val NWcorner = tileLocation(zoom, x, y)
+    val SEcorner = tileLocation(zoom, x+1, y+1)
+    val f = (SEcorner - NWcorner) / imgSize
+    val p = 1<<zoom
 
+    for (i <- (0 until imgSize*imgSize).par) {
+      val yPixel = i / imgSize
+      val xPixel = i % imgSize
+
+      val lon = (xPixel.toDouble / imgSize + x) * 360 / p - 180.0
+      val lat = atan(sinh(Pi * (1 - 2 * (yPixel.toDouble / imgSize + y) / p))) * 180.0/Pi
+
+      val loc = Location(lat, lon)
+
+      val temperature = predictTemperature(grid, loc)
+
+      val color = interpolateColor(colors, temperature)
+      image(i) = Pixel(color.red, color.green, color.blue, 127)
+    }
+
+    Image(imgSize, imgSize, image)
+  }
 }
