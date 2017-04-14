@@ -25,7 +25,7 @@ object Visualization2 {
     d10: Double,
     d11: Double
   ): Double = {
-    ???
+    d11*x*y+d01*(1-x)*y+d10*x*(1-y)+d00*(1-x)*(1-y)
   }
 
   /**
