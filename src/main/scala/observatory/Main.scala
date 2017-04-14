@@ -9,7 +9,8 @@ import Manipulation.makeGrid
 
 object Main extends App {
   val absoluteYears = 1975 to 2015
-  val imgSize = 256
+  val imgSize = 128
+  val gridResolution = 10
 
   val absoluteColorScale = List(
     (60.0, Color(255, 255, 255)),
@@ -76,7 +77,7 @@ object Main extends App {
     val start = System.currentTimeMillis()
     val records = locateTemperatures(year, "/stations.csv", s"/$year.csv")
     val temperatures = locationYearlyAverageRecords(records)
-    val grid = makeGrid(temperatures)
+    val grid = makeGrid(temperatures, gridResolution)
     val stop = System.currentTimeMillis()
     val (h, m, s) = millisToHMS(start, stop)
     println(s"***\tComputing grid for year $year COMPLETED. It took $h:$m:$s.")
@@ -90,4 +91,6 @@ object Main extends App {
   println("\n\n*** Computing tiles for absolute temperatures STARTED")
   generateTiles(absoluteYearlyData, absoluteTileGeneration)
   println("*** Computing tiles for absolute temperatures COMPLETED")
+
+
 }

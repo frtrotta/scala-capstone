@@ -54,44 +54,61 @@ class ManipulationTest extends PropSpec with PropertyChecks with Matchers {
 
   import Manipulation._
 
-  property("Coordinates (lat, lon) converted to index must be inbound") {
+  property("Geographic coordinates converted to unit grid coordinates must be inbound") {
     forAll(
       (Gen.choose(-89, 90), "Latitude"),
       (Gen.choose(-180, 179), "Longitude")
     ) {
       (lat: Int, lon: Int) =>
-        whenever(lat >= -89 && lat <= 90 && lon >= -180 && lon <= 179) {
-          val i = coordinatesToGridlIndex(lat, lon)
-          i should be >= 0
-          i should be < 360 * 180
+        whenever(
+          lat >= -89 && lat <= 90 &&
+            lon >= -180 && lon <= 179
+        ) {
+          val (x, y) = geoToUnitGrid(lat, lon)
+          x should be >= 0
+          x should be < 360
+          y should be >= 0
+          y should be < 180
         }
     }
   }
 
-  property("gridIndexToLocation must be the inverse of coordinatesToGridlIndex") {
+  val resolutions = Seq(1, 5, 10, 15, 20)
+
+  property("Unit grid coordinates converted to grid coordinates must be inbound") {
     forAll(
-      (Gen.choose(-89, 90), "Latitude"),
-      (Gen.choose(-180, 179), "Longitude")
+      (Gen.choose(0, 359), "x"),
+      (Gen.choose(0, 179), "y"),
+      (Gen.oneOf(resolutions), "grid resolution")
     ) {
-      (lat: Int, lon: Int) =>
-        whenever(lat >= -89 && lat <= 90 && lon >= -180 && lon <= 179) {
-          val l = gridIndexToLocation(coordinatesToGridlIndex(lat, lon))
-          l.lat should equal(lat)
-          l.lon should equal(lon)
+      (x: Int, y: Int, gridResolution: Int) =>
+        whenever(
+          x >= 0 && x <= 359 &&
+            y >= 0 && y <= 179 &&
+          resolutions.contains(gridResolution)
+        ) {
+          val (col, row) = unitGridToGrid(x, y, gridResolution)
+          col should be >= 0
+          col should be <= (360/gridResolution)
+          row should be >= 0
+          row should be <= (180/gridResolution)
         }
     }
   }
 
-  property("coordinatesToGridlIndex must correctly convert for specific coordinates") {
+  property("Cases from grid index to unit grid index") {
     forAll(
       Table(
-        ("lat", "lon", "r"),
-        (67, 0, 23 * 360 + 180)
+        ("gridIndex", "unit grid index", "gridResolution"),
+        (0, 0, 10),
+        (1, 10, 10),
+        (36, 360*10, 10),
+        ((360/10)*(180/10+1)-1,360*180-10, 10)
       )
     ) {
-      (lat: Int, lon: Int, r: Int) => {
-        val i = coordinatesToGridlIndex(lat, lon)
-        i should equal(r)
+      (gridIndex: Int, unitGridIndex: Int, gridResolution: Int) => {
+        val ugi = gridIndexToUnitGridIndex(gridIndex, gridResolution)
+        ugi should equal(unitGridIndex)
       }
     }
   }
@@ -173,7 +190,9 @@ class ManipulationTest extends PropSpec with PropertyChecks with Matchers {
               println("COMPLETED")
               Fixture.avg(lat, lon)
             }
-            else {r}
+            else {
+              r
+            }
           }
 
           t should equal(expected)
