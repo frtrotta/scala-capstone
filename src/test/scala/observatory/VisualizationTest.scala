@@ -74,7 +74,7 @@ class VisualizationTest extends FunSuite with Checkers {
       (Location(0.0, -90), 70.0),
       (Location(0.0, 90), -50.0)
     )
-
-    visualize(temperatures, colorScale).output(new java.io.File("target/some-image.png"))
+    val f = new java.io.File("target/some-image.png")
+    visualize(temperatures, colorScale).output(f)
   }
 }
