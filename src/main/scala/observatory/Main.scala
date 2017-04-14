@@ -35,7 +35,7 @@ object Main extends App {
     val delta = stop - start
     val h = (delta / 1000) / 3600
     val m = ((delta / 1000) - (h * 3600)) / 60
-    val s = ((delta / 1000) - (h * 3660) - (m * 60))
+    val s = ((delta / 1000) - (h * 3600) - (m * 60))
     (h, m, s)
   }
 
@@ -72,7 +72,7 @@ object Main extends App {
     tileGeneration("deviations", deviationColorScale, year, zoom, x, y, grid)
   }
 
-  def giuseppe(year: Int) = {
+  def makeYearlyGrid(year: Int) = {
     val start = System.currentTimeMillis()
     val records = locateTemperatures(year, "/stations.csv", s"/$year.csv")
     val temperatures = locationYearlyAverageRecords(records)
@@ -84,7 +84,7 @@ object Main extends App {
   }
 
   println("*** Computing yearly grids STARTED")
-  val absoluteYearlyData = absoluteYears.map(giuseppe)
+  val absoluteYearlyData = absoluteYears.map(makeYearlyGrid)
   println("*** Computing yearly grids COMPLETED")
 
   println("\n\n*** Computing tiles for absolute temperatures STARTED")
