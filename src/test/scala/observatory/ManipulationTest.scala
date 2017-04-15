@@ -73,7 +73,7 @@ class ManipulationTest extends PropSpec with PropertyChecks with Matchers {
     }
   }
 
-  val resolutions = Seq(1, 5, 10, 15, 20)
+  val resolutions = Seq(1, 5, 10, 15, 20, 30, 45, 60)
 
   property("Unit grid coordinates converted to grid coordinates must be inbound") {
     forAll(
@@ -89,10 +89,32 @@ class ManipulationTest extends PropSpec with PropertyChecks with Matchers {
         ) {
           val (col, row) = unitGridToGrid(x, y, gridResolution)
           col should be >= 0
-          col should be <= (360/gridResolution)
+          col should be < gridCols(gridResolution)
           row should be >= 0
-          row should be <= (180/gridResolution)
+          row should be < gridRows(gridResolution)
         }
+    }
+  }
+
+  val pippoGen = for {
+    resolution <- Gen.oneOf(resolutions)
+    gridIndex <- Gen.choose(0, gridCols(resolution)*gridRows(resolution)-1)
+  } yield (resolution, gridIndex)
+
+  property("grid index converted to unit grid index must always be inbound") {
+    forAll(
+      (pippoGen, "(resolution, gridIndex)")
+    ) {
+      case (resolution, gridIndex) => {
+        whenever (
+          resolutions.contains(resolution) &&
+          gridIndex >= 0 && gridIndex < gridCols(resolution)*gridRows(resolution)
+        ) {
+          val ugi = gridIndexToUnitGridIndex(gridIndex, resolution)
+          ugi should be >= 0
+          ugi should be < 360*180
+        }
+      }
     }
   }
 
@@ -109,6 +131,40 @@ class ManipulationTest extends PropSpec with PropertyChecks with Matchers {
       (gridIndex: Int, unitGridIndex: Int, gridResolution: Int) => {
         val ugi = gridIndexToUnitGridIndex(gridIndex, gridResolution)
         ugi should equal(unitGridIndex)
+      }
+    }
+  }
+
+  val paperinoGen = for {
+    resolution <- Gen.oneOf(resolutions)
+    row <- Gen.choose(0, gridRows(resolution) - 2)
+  } yield (resolution, row)
+
+  property("Interpolation values are correct") {
+    forAll(
+      (paperinoGen, "(resolution, row)")
+    ) {
+      case (resolution, row) => {
+        whenever (
+          resolutions.contains(resolution) &&
+          row >= 0 && row < gridRows(resolution)-1 // last row must not be taken
+        ) {
+          val dim = gridRows(resolution) * gridCols(resolution)
+          val data = new Array[Double](dim)
+          for (i <- 0 until data.length) {
+            data(i) = 0
+          }
+          for (i <- 0 until data.length by gridCols(resolution)) {
+            data(i) = 1
+          }
+
+          val col = gridCols(resolution) - 1
+          val (d00, d01, d10, d11) = interpolationValues(data, col, row, resolution)
+          d00 should equal(0)
+          d01 should equal(0)
+          d10 should equal(1)
+          d11 should equal(1)
+        }
       }
     }
   }

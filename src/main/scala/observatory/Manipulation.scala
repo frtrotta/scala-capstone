@@ -48,20 +48,26 @@ object Manipulation {
     row * gridCols(gridResolution) + col
   }
 
+  def interpolationValues(data: Array[Double], col: Int, row: Int, gridResolution: Int) = {
+    val d00 = data(gridCoordinatesToGridIndex(col, row, gridResolution))
+    val d01 = data(gridCoordinatesToGridIndex(col, row + 1, gridResolution))
+    // When col is the last, the first is taken as the next
+    val d10 = if (col == gridCols(gridResolution) - 1)
+      data(gridCoordinatesToGridIndex(0, row, gridResolution))
+    else
+      data(gridCoordinatesToGridIndex(col + 1, row, gridResolution))
+    val d11 = if (col == gridCols(gridResolution) - 1)
+      data(gridCoordinatesToGridIndex(0, row + 1, gridResolution))
+    else
+      data(gridCoordinatesToGridIndex(col + 1, row + 1, gridResolution))
+    (d00, d01, d10, d11)
+  }
+
   def bilinearInterpolatedGrid(data: Array[Double], gridResolution: Int) = {
     (lat: Int, lon: Int) => {
       val (x, y) = geoToUnitGrid(lat, lon)
       val (col, row) = unitGridToGrid(x, y, gridResolution)
-      val d00 = data(gridCoordinatesToGridIndex(col, row, gridResolution))
-      val d01 = data(gridCoordinatesToGridIndex(col, row + 1, gridResolution))
-      val d10 = if (col == gridCols(gridResolution))
-                  data(gridCoordinatesToGridIndex(0, row, gridResolution))
-                else
-                  data(gridCoordinatesToGridIndex(col + 1, row, gridResolution))
-      val d11 = if (col == gridCols(gridResolution))
-                  data(gridCoordinatesToGridIndex(0, row + 1, gridResolution))
-                else
-                  data(gridCoordinatesToGridIndex(col + 1, row + 1, gridResolution))
+      val (d00, d01, d10, d11) = interpolationValues(data, col, row, gridResolution)
       bilinearInterpolation(
         (x % gridResolution).toDouble / gridResolution,
         (y % gridResolution).toDouble / gridResolution,
