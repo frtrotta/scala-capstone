@@ -84,13 +84,11 @@ object Main extends App {
     (year, grid)
   }
 
-  println("*** Computing yearly grids STARTED")
+  /*println("*** Computing yearly grids STARTED")
   val absoluteYearlyData = absoluteYears.map(makeYearlyGrid)
   println("*** Computing yearly grids COMPLETED")
 
   println("\n\n*** Computing tiles for absolute temperatures STARTED")
   generateTiles(absoluteYearlyData, absoluteTileGeneration)
-  println("*** Computing tiles for absolute temperatures COMPLETED")
-
-
+  println("*** Computing tiles for absolute temperatures COMPLETED")*/
 }
