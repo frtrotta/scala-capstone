@@ -41,7 +41,7 @@ object ComputeAbsoluteTiles extends App {
 
   for (year <- 1975 to 2015) {
     val records = locateTemperatures(year, "/stations.csv", s"/$year.csv")
-    val temperatures = locationYearlyAverageRecords(records).toList
+    val temperatures = locationYearlyAverageRecords(records)
 
     for (zoom <- 0 to 3) {
       for (x <- 0 to (1 << zoom - 1)) {
