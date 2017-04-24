@@ -16,12 +16,14 @@ object ComputeDeviationTiles extends App {
   def computeTemperaturess() = {
     print("Computing yearly average records for years 1975 to 1995... ")
     val start = System.currentTimeMillis()
-    val temperaturess = (1975 to 1995).map(
-      year => {
-        val records = locateTemperatures(year, "/stations.csv", s"/$year.csv")
-        locationYearlyAverageRecords(records)
-      }
-    )
+    val normalYears = 1975 to 1995
+    val temperaturess = new Array[Iterable[(Location, Double)]](normalYears.length)
+    for (year <- normalYears) {
+      val i = year - normalYears.head
+      val records = locateTemperatures(year, "/stations.csv", s"/$year.csv")
+      temperaturess(i) = locationYearlyAverageRecords(records)
+      print(s"$year ")
+    }
     val stop = System.currentTimeMillis()
     val (h, m, s) = millisToHMS(start, stop)
     println(s" COMPLETED. It took $h:$m:$s.")
@@ -55,6 +57,7 @@ object ComputeDeviationTiles extends App {
 
   val years = 1996 to 2015
   val zooms = 0 to 3
+
   def positions(zoom: Int) = 0 to (1 << zoom - 1)
 
   val effort = years.length + zooms.foldLeft(0)((a: Int, z: Int) => (a + positions(z).length * positions(z).length))
