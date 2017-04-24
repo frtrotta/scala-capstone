@@ -38,4 +38,12 @@ object Util {
       Files.createDirectories(p)
     }
   }
+
+  def printCompletedWithTime(h: Long, m: Long, s:Long) = {
+    println(f" COMPLETED. It took $h%02d:$m%02d:$s%02d.")
+  }
+
+  def printCompletedWithTimeAndPercentage(h: Long, m: Long, s:Long, p: Double) = {
+    println(f" COMPLETED. It took $h%02d:$m%02d:$s%02d. $p%.2f%% of total work done.")
+  }
 }

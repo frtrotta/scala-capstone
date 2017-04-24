@@ -38,7 +38,7 @@ object ComputeAbsoluteTiles extends App {
           val (h, m, s) = millisToHMS(start, stop)
           accomplished += 1
           val p = accomplished * 100.0 / effort
-          println(f" COMPLETED. It took $h:$m:$s. $p%.2f%% of total work done.")
+          printCompletedWithTimeAndPercentage(h, m, s, p)
         }
       }
     }

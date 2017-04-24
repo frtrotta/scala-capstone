@@ -26,7 +26,7 @@ object ComputeDeviationTiles extends App {
     }
     val stop = System.currentTimeMillis()
     val (h, m, s) = millisToHMS(start, stop)
-    println(s" COMPLETED. It took $h:$m:$s.")
+    printCompletedWithTime(h, m, s)
     temperaturess
   }
 
@@ -43,7 +43,7 @@ object ComputeDeviationTiles extends App {
     val avg = average(temperaturess, gridResolution)
     val stop = System.currentTimeMillis()
     val (h, m, s) = millisToHMS(start, stop)
-    println(s" COMPLETED. It took $h:$m:$s.")
+    printCompletedWithTime(h, m, s)
     avg
   }
 
@@ -79,7 +79,7 @@ object ComputeDeviationTiles extends App {
           val (h, m, s) = millisToHMS(start, stop)
           accomplished += 1
           val p = accomplished * 100.0 / effort
-          println(f" COMPLETED. It took $h:$m:$s. $p%.2f%% of total work done.")
+          printCompletedWithTimeAndPercentage(h, m, s, p)
         }
       }
     }
