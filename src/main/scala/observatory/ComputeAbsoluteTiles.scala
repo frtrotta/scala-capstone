@@ -14,13 +14,20 @@ object ComputeAbsoluteTiles extends App {
 
   val imgSize = 8
 
-  for (year <- 1975 to 2015) {
+  val years = 1975 to 2015
+  val zooms = 0 to 3
+  def positions(zoom: Int) = 0 to (1 << zoom - 1)
+
+  val effort = years.length + zooms.foldLeft(0)((a: Int, z: Int) => (a + positions(z).length * positions(z).length))
+  var accomplished = 0
+
+  for (year <- years) {
     val records = locateTemperatures(year, "/stations.csv", s"/$year.csv")
     val temperatures = locationYearlyAverageRecords(records)
 
-    for (zoom <- 0 to 3) {
-      for (x <- 0 to (1 << zoom - 1)) {
-        for (y <- 0 to (1 << zoom - 1)) {
+    for (zoom <- zooms) {
+      for (x <- positions(zoom)) {
+        for (y <- positions(zoom)) {
           print(s"Processing tile year=$year, zoom=$zoom, x=$x, y=$y for $dir (imgSize = $imgSize)...")
 
           createDir(dir, year, zoom)
@@ -29,7 +36,9 @@ object ComputeAbsoluteTiles extends App {
           tile(temperatures, absoluteColorScale, zoom, x, y, imgSize).output(f)
           val stop = System.currentTimeMillis()
           val (h, m, s) = millisToHMS(start, stop)
-          println(s" COMPLETED. It took $h:$m:$s.")
+          accomplished += 1
+          val p = accomplished * 100.0 / effort
+          println(f" COMPLETED. It took $h:$m:$s. $p%.2f%% of total work done.")
         }
       }
     }
