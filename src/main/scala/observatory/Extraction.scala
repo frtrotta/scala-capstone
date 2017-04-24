@@ -70,7 +70,7 @@ object Extraction {
     (for {
       (id, date, temperature) <- temperatures
       if (stations.contains(id))
-    } yield (date, stations(id), temperature)).toIterable // enhance
+    } yield (date, stations(id), temperature)).toIterable
   }
 
   /**
@@ -87,10 +87,12 @@ object Extraction {
       memory. Congratulations!
       */
 
-    // TODO Does a .par after .groupBy allow for parallel mapValues execution?
     records
       .groupBy(_._2)
+      .par
       .mapValues(l => l.foldLeft(0.0)((a, e) => a + e._3) / l.size)
+      .toArray
+      .toIterable
   }
 
 }
