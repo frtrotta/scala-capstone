@@ -18,7 +18,7 @@ object ComputeAbsoluteTiles extends App {
   val zooms = 0 to 3
   def positions(zoom: Int) = 0 to (1 << zoom - 1)
 
-  val effort = years.length * zooms.foldLeft(0)((a: Int, z: Int) => (a + positions(z).length * positions(z).length))
+  val totalEffort = years.length * zooms.foldLeft(0)((a: Int, z: Int) => (a + positions(z).length * positions(z).length))
   var accomplished = 0
 
   for (year <- years) {
@@ -35,10 +35,8 @@ object ComputeAbsoluteTiles extends App {
           val start = System.currentTimeMillis()
           tile(temperatures, absoluteColorScale, zoom, x, y, imgSize).output(f)
           val stop = System.currentTimeMillis()
-          val (h, m, s) = millisToHMS(start, stop)
           accomplished += 1
-          val p = accomplished * 100.0 / effort
-          printCompletedWithTimeAndPercentage(h, m, s, p)
+          printCompletedWithTimeAndPercentage(start, stop, accomplished, totalEffort)
         }
       }
     }

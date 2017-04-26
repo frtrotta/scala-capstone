@@ -25,8 +25,7 @@ object ComputeDeviationTiles extends App {
       print(s"$year ")
     }
     val stop = System.currentTimeMillis()
-    val (h, m, s) = millisToHMS(start, stop)
-    printCompletedWithTime(h, m, s)
+    printCompletedWithTime(start, stop)
     temperaturess
   }
 
@@ -42,8 +41,7 @@ object ComputeDeviationTiles extends App {
     val start = System.currentTimeMillis()
     val avg = average(temperaturess, gridResolution)
     val stop = System.currentTimeMillis()
-    val (h, m, s) = millisToHMS(start, stop)
-    printCompletedWithTime(h, m, s)
+    printCompletedWithTime(start, stop)
     avg
   }
 
@@ -60,7 +58,7 @@ object ComputeDeviationTiles extends App {
 
   def positions(zoom: Int) = 0 to (1 << zoom - 1)
 
-  val effort = years.length * zooms.foldLeft(0)((a: Int, z: Int) => (a + positions(z).length * positions(z).length))
+  val totalEffort = years.length * zooms.foldLeft(0)((a: Int, z: Int) => (a + positions(z).length * positions(z).length))
   var accomplished = 0
 
   for (year <- years) {
@@ -76,10 +74,8 @@ object ComputeDeviationTiles extends App {
           val devGrid = deviation(temperatures, normals)
           visualizeGrid(devGrid, deviationColorScale, zoom, x, y, imgSize).output(f)
           val stop = System.currentTimeMillis()
-          val (h, m, s) = millisToHMS(start, stop)
           accomplished += 1
-          val p = accomplished * 100.0 / effort
-          printCompletedWithTimeAndPercentage(h, m, s, p)
+          printCompletedWithTimeAndPercentage(start, stop, accomplished, totalEffort)
         }
       }
     }

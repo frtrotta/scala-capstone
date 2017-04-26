@@ -24,8 +24,7 @@ object Util {
     (-7.0, Color(0, 0, 255))
   )
 
-  def millisToHMS(start: Long, stop: Long) = {
-    val delta = stop - start
+  def millisToHMS(delta: Long) = {
     val h = (delta / 1000) / 3600
     val m = ((delta / 1000) - (h * 3600)) / 60
     val s = ((delta / 1000) - (h * 3600) - (m * 60))
@@ -39,11 +38,17 @@ object Util {
     }
   }
 
-  def printCompletedWithTime(h: Long, m: Long, s:Long) = {
+  def printCompletedWithTime(start: Long, stop: Long) = {
+    val delta = stop - start
+    val (h, m, s) = millisToHMS(delta)
     println(f" COMPLETED. It took $h%02d:$m%02d:$s%02d.")
   }
 
-  def printCompletedWithTimeAndPercentage(h: Long, m: Long, s:Long, p: Double) = {
-    println(f" COMPLETED. It took $h%02d:$m%02d:$s%02d. $p%.2f%% of total work done.")
+  def printCompletedWithTimeAndPercentage(start: Long, stop: Long, accomplished: Int, totalEffort: Int) = {
+    val delta = stop - start
+    val (h, m, s) = millisToHMS(delta)
+    val p = accomplished * 100.0 / totalEffort
+    val (eta_h, eta_m, eta_s) = millisToHMS(delta * (totalEffort - accomplished))
+    println(f" COMPLETED. It took $h%02d:$m%02d:$s%02d. $p%.2f%% of total work done. ETA: ${eta_h}%02d:${eta_m}%02d:${eta_s}%02d")
   }
 }
