@@ -25,9 +25,10 @@ object Util {
   )
 
   def millisToHMS(delta: Long) = {
-    val h = (delta / 1000) / 3600
-    val m = ((delta / 1000) - (h * 3600)) / 60
-    val s = ((delta / 1000) - (h * 3600) - (m * 60))
+    val sec = delta / 1000
+    val h = sec / 3600
+    val m = (sec % 3600) / 60
+    val s = sec % 60
     (h, m, s)
   }
 
