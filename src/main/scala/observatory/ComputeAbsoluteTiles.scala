@@ -18,7 +18,7 @@ object ComputeAbsoluteTiles extends App {
   val zooms = 0 to 3
   def positions(zoom: Int) = 0 to (1 << zoom - 1)
 
-  val effort = years.length + zooms.foldLeft(0)((a: Int, z: Int) => (a + positions(z).length * positions(z).length))
+  val effort = years.length * zooms.foldLeft(0)((a: Int, z: Int) => (a + positions(z).length * positions(z).length))
   var accomplished = 0
 
   for (year <- years) {
