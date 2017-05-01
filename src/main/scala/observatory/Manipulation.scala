@@ -25,8 +25,9 @@ object Manipulation {
   }
 
   def geoToUnitGrid(lat: Int, lon: Int) = {
-    val y = 90 - lat
-    val x = lon + 180
+    val tempY = 90 - lat
+    val y = if (tempY > 179 ) 179 else if (tempY < 0) 00 else tempY // saturation of y
+    val x = (lon + 180) % 360
     (x, y)
   }
 
@@ -51,7 +52,7 @@ object Manipulation {
   def interpolationValues(data: Array[Double], col: Int, row: Int, gridResolution: Int) = {
     val d00 = data(gridCoordinatesToGridIndex(col, row, gridResolution))
     val d01 = data(gridCoordinatesToGridIndex(col, row + 1, gridResolution))
-    // When col is the last, the first is taken as the next
+    // When col is the last, the first is taken as the (n+1)-th
     val d10 = if (col == gridCols(gridResolution) - 1)
       data(gridCoordinatesToGridIndex(0, row, gridResolution))
     else
@@ -146,8 +147,8 @@ object Manipulation {
     * @param normals      A grid containing the “normal” temperatures
     * @return A sequence of grids containing the deviations compared to the normal temperatures
     */
-  def deviation(temperatures: Iterable[(Location, Double)], normals: (Int, Int) => Double): (Int, Int) => Double = {
-    val current = makeGrid(temperatures)
+  def deviation(temperatures: Iterable[(Location, Double)], normals: (Int, Int) => Double, gridResolution: Int = 1): (Int, Int) => Double = {
+    val current = makeGrid(temperatures, gridResolution)
     (lat: Int, lon: Int) => current(lat, lon) - normals(lat, lon)
   }
 
