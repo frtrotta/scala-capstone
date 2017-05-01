@@ -9,6 +9,9 @@ import prop._
 import org.scalacheck.Gen
 import scala.math.{pow, sqrt}
 
+import Interaction.tileLocation
+import scala.math.{Pi, atan, sinh}
+
 @RunWith(classOf[JUnitRunner])
 class ManipulationTest extends PropSpec with PropertyChecks with Matchers {
 
@@ -85,7 +88,7 @@ class ManipulationTest extends PropSpec with PropertyChecks with Matchers {
         whenever(
           x >= 0 && x <= 359 &&
             y >= 0 && y <= 179 &&
-          resolutions.contains(gridResolution)
+            resolutions.contains(gridResolution)
         ) {
           val (col, row) = unitGridToGrid(x, y, gridResolution)
           col should be >= 0
@@ -98,7 +101,7 @@ class ManipulationTest extends PropSpec with PropertyChecks with Matchers {
 
   val pippoGen = for {
     resolution <- Gen.oneOf(resolutions)
-    gridIndex <- Gen.choose(0, gridCols(resolution)*gridRows(resolution)-1)
+    gridIndex <- Gen.choose(0, gridCols(resolution) * gridRows(resolution) - 1)
   } yield (resolution, gridIndex)
 
   property("grid index converted to unit grid index must always be inbound") {
@@ -106,13 +109,13 @@ class ManipulationTest extends PropSpec with PropertyChecks with Matchers {
       (pippoGen, "(resolution, gridIndex)")
     ) {
       case (resolution, gridIndex) => {
-        whenever (
+        whenever(
           resolutions.contains(resolution) &&
-          gridIndex >= 0 && gridIndex < gridCols(resolution)*gridRows(resolution)
+            gridIndex >= 0 && gridIndex < gridCols(resolution) * gridRows(resolution)
         ) {
           val ugi = gridIndexToUnitGridIndex(gridIndex, resolution)
           ugi should be >= 0
-          ugi should be < 360*180
+          ugi should be < 360 * 180
         }
       }
     }
@@ -124,8 +127,8 @@ class ManipulationTest extends PropSpec with PropertyChecks with Matchers {
         ("gridIndex", "unit grid index", "gridResolution"),
         (0, 0, 10),
         (1, 10, 10),
-        (36, 360*10, 10),
-        ((360/10)*(180/10+1)-1,360*180-10, 10)
+        (36, 360 * 10, 10),
+        ((360 / 10) * (180 / 10 + 1) - 1, 360 * 180 - 10, 10)
       )
     ) {
       (gridIndex: Int, unitGridIndex: Int, gridResolution: Int) => {
@@ -145,9 +148,9 @@ class ManipulationTest extends PropSpec with PropertyChecks with Matchers {
       (paperinoGen, "(resolution, row)")
     ) {
       case (resolution, row) => {
-        whenever (
+        whenever(
           resolutions.contains(resolution) &&
-          row >= 0 && row < gridRows(resolution)-1 // last row must not be taken
+            row >= 0 && row < gridRows(resolution) - 1 // last row must not be taken
         ) {
           val dim = gridRows(resolution) * gridCols(resolution)
           val data = new Array[Double](dim)
@@ -253,6 +256,48 @@ class ManipulationTest extends PropSpec with PropertyChecks with Matchers {
 
           t should equal(expected)
         }
+    }
+  }
+
+
+  property("gridCoordinatesToGridIndex must return an inbound index") {
+    forAll(
+      Table(
+        ("zoom", "x", "y", "gridResolution", "imgSize"),
+        (1, 1, 1, 10, 256)
+      )
+    ) {
+      case (zoom, x, y, gridResolution, imgSize) => {
+        whenever(
+          zoom >= 0 && zoom <= 3 &&
+            x >= 0 && x <= (1 << zoom - 1) &&
+            y >= 0 && y <= (1 << zoom - 1) &&
+            gridResolution == 10 &&
+            imgSize == 256
+        ) {
+
+
+          val NWcorner = tileLocation(zoom, x, y)
+          val SEcorner = tileLocation(zoom, x + 1, y + 1)
+          val f = (SEcorner - NWcorner) / imgSize
+          val p = 1 << zoom
+
+          for (i <- (0 until imgSize * imgSize)) {
+            val yPixel = i / imgSize
+            val xPixel = i % imgSize
+
+            val lon = (xPixel.toDouble / imgSize + x) * 360 / p - 180.0
+            val lat = atan(sinh(Pi * (1 - 2 * (yPixel.toDouble / imgSize + y) / p))) * 180.0 / Pi
+            //----
+            val (xGrid, yGrid) = geoToUnitGrid(lat.toInt, lon.toInt)
+            val (col, row) = unitGridToGrid(xGrid, yGrid, gridResolution)
+            val index = gridCoordinatesToGridIndex(col, row, gridResolution)
+
+            index should be >= 0
+            index should be < gridCols(gridResolution) * gridRows(gridResolution)
+          }
+        }
+      }
     }
   }
 }
