@@ -26,7 +26,7 @@ object Manipulation {
 
   def geoToUnitGrid(lat: Int, lon: Int) = {
     val tempY = 90 - lat
-    val y = if (tempY > 179 ) 179 else if (tempY < 0) 00 else tempY // saturation of y
+    val y = if (tempY > 179 ) 179 else if (tempY < 0) 0 else tempY // saturation of y
     val x = (lon + 180) % 360
     (x, y)
   }
